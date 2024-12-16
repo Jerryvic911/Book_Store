@@ -11,7 +11,7 @@ function Home() {
   const [loading, setLoading] = useState(true); // Start loading as true
 
   useEffect(() => {
-    axios.get("http://localhost:3000/books")
+    axios.get("https://backend-indol-mu.vercel.app/books")
       .then(response => {
         setBooks(response.data.data);
         setLoading(false); // Set loading to false after data is fetched
