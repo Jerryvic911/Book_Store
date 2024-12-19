@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Spinner from "../../components/Spinner";
+import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
-import { AiOutlineEdit as AiOutLineEdit } from 'react-icons/ai';
-import { BsInfoCircle } from 'react-icons/bs';
-import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
+
+import { MdOutlineAddBox } from 'react-icons/md';
+import BooksCard from "../components/Home/BooksCard";
+import BooksTable from "../components/Home/BooksTable";
 
 function Home() {
   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true); // Start loading as true
+  const [loading, setLoading] = useState(true);
+  const [showtype, setShowtype] = useState("card"); // Set default to "card"
 
   useEffect(() => {
-    axios.get("https://backend-indol-mu.vercel.app/books")
+    axios.get(`${import.meta.env.VITE_API_URL}/books`)
       .then(response => {
         setBooks(response.data.data);
         setLoading(false); // Set loading to false after data is fetched
@@ -24,49 +26,30 @@ function Home() {
 
   return (
     <div className="p-4">
+      <div className="flex justify-center items-center gap-x-5">
+        <button className="bg-sky-600 hover:bg-sky-800 px-4 py-1 rounded-lg"
+          onClick={() => setShowtype("card")}
+        >
+            Card View
+        </button>
+        <button className="bg-sky-600 hover:bg-sky-800 px-4 py-1 rounded-lg"
+          onClick={() => setShowtype("table")}
+        >
+            Table View
+        </button>
+      </div>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl my-8">Books List</h1>
-        <Link to='/books/create'>
+        <Link to={'/books/create'}>
           <MdOutlineAddBox className="text-sky-800 text-4xl" />
         </Link>
       </div>
-      {loading ? ( // Show spinner when loading is true
+      {loading ? (
         <Spinner />
+      ) : showtype === "card" ? (
+        <BooksCard books={books} />
       ) : (
-        <table className="w-full border-separate border-spacing-2">
-          <thead>
-            <tr>
-              <th className="border border-slate-600 rounded-md">No</th>
-              <th className="border border-slate-600 rounded-md">Title</th>
-              <th className="border border-slate-600 rounded-md max-md:hidden">Author</th>
-              <th className="border border-slate-600 rounded-md max-md:hidden">Publish Year</th>
-              <th className="border border-slate-600 rounded-md">Operations</th>
-            </tr>
-          </thead>
-          <tbody>
-            {books.map((book, index) => ( // Return the JSX for each book
-              <tr key={book._id} className="h-8">
-                <td className="border border-slate-700 text-center rounded-md">{index + 1}</td>
-                <td className="border border-slate-700 text-center rounded-md">{book.title}</td>
-                <td className="border border-slate-700 text-center rounded-md">{book.author}</td>
-                <td className="border border-slate-700 text-center rounded-md">{book.publishYear}</td>
-                <td className="border border-slate-700 text-center rounded-md">
-                  <div className="flex justify-center gap-x-4">
-                    <Link to={`/books/details/${book._id}`}>
-                      <BsInfoCircle className="text-green-800 text-2xl" />
-                    </Link>
-                    <Link to={`/books/edit/${book._id}`}>
-                      <AiOutLineEdit className="text-yellow-600 text-2xl" />
-                    </Link>
-                    <Link to={`/books/delete/${book._id}`}>
-                      <MdOutlineDelete className="text-red-600 text-2xl" />
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <BooksTable books={books} />
       )}
     </div>
   );
