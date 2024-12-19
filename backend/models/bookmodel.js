@@ -14,11 +14,6 @@ const bookSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    content: {
-      type: String,
-      required: true,
-      maxlength: [1000000, 'Content cannot be longer than 1 million characters']
-    },
   },
   {
     timestamps: true,
